@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.4.3.RELEASE'
+        springBootVersion = '2.1.1.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -20,14 +20,11 @@ repositories {
     mavenCentral()
 }
 
-bootRepackage {
-    enabled = true
-}
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter',
-            'org.springframework.boot:spring-boot-starter-web',
-            'org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile group: "org.springframework.boot", name: "spring-boot-starter", version: '2.1.1.RELEASE'
+    compile group: "org.springframework.boot", name: "spring-boot-starter-web", version: '2.1.1.RELEASE'
+    compile group: "org.springframework.boot", name: "spring-boot-starter-thymeleaf", version: '2.1.1.RELEASE'
 }
 
 
@@ -38,7 +35,7 @@ task customJar(type: org.gradle.jvm.tasks.Jar) {
 //    mergeServiceFiles()
     manifest {
         attributes(
-                'Main-Class': "com.example.spring.Application"
+                "Main-Class": "com.example.spring.Application"
         )
     }
 

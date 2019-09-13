@@ -11,7 +11,7 @@ stages:
 build:
   image: gradle:alpine
   stage: build
-  script: gradle --build-cache assemble
+  script: gradle build assemble
   artifacts:
     paths:
       - build
