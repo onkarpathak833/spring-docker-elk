@@ -17,16 +17,16 @@ build:
       - build
       - .gradle
 
-test:
-  image: gradle:alpine
-  stage: test
-  script:
-    - gradle test jacocoTestReport
-    - cat build/reports/jacoco/test/html/index.html | grep -o 'Total[^%]*%'
-  artifacts:
-    paths:
-      - build
-      - .gradle
+#test:
+#  image: gradle:alpine
+#  stage: test
+#  script:
+#    - gradle test jacocoTestReport
+#    - cat build/reports/jacoco/test/html/index.html | grep -o 'Total[^%]*%'
+#  artifacts:
+#    paths:
+#      - build
+#      - .gradle
 
 docker-build:
   image: docker:latest
@@ -38,18 +38,18 @@ docker-build:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker push $REGISTRY_IMAGE
 
-pages:
-  stage: deploy
-  dependencies:
-    - test
-  script:
-    - mv build/reports/jacoco/test/html/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - master
+#pages:
+#  stage: deploy
+#  dependencies:
+#    - test
+#  script:
+#    - mv build/reports/jacoco/test/html/ public/
+#  artifacts:
+#    paths:
+#      - public
+#    expire_in: 30 days
+#  only:
+#    - master
 
 k8s-deploy-qa:
   image: google/cloud-sdk
