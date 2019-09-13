@@ -51,7 +51,7 @@ docker-build:
 #  only:
 #    - master
 
-k8s-deploy-qa:
+k8s-deploy:
   image: google/cloud-sdk
   stage: deploy
   script:
@@ -65,31 +65,8 @@ k8s-deploy-qa:
     - kubectl delete secret test-app 2>/dev/null || echo "secret does not exist"
     - kubectl create secret docker-registry test-app --docker-server=https://registry.gitlab.com --docker-username=$REGISTRY_TOKEN --docker-password=$REGISTRY_PASSWD
     - kubectl apply -f deployment.yml
-    - kubectl apply -f deployment-db.yml
     - kubectl set image deployment/test-app test-app=$REGISTRY_IMAGE
 
   environment:
     name: staging
     url: http://staging/
-
-k8s-deploy-prod:
-  image: google/cloud-sdk
-  stage: deploy
-  script:
-    - echo "$GOOGLE_KEY" > key.json
-    - gcloud auth activate-service-account --key-file key.json
-    - gcloud config set compute/zone $CLUSTER_ZONE
-    - gcloud config set project $GCP_PROJECT_NAME
-    - gcloud container clusters get-credentials $CLUSTER_NAME
-    - kubectl create namespace prod 2>/dev/null || echo "namespace prod already exist"
-    - kubectl config set-context --current --namespace=prod
-    - kubectl delete secret test-app 2>/dev/null || echo "secret does not exist"
-    - kubectl create secret docker-registry test-app --docker-server=https://registry.gitlab.com --docker-username=$REGISTRY_TOKEN --docker-password=$REGISTRY_PASSWD
-    - kubectl apply -f deployment.yml
-    - kubectl apply -f deployment-db.yml
-    - kubectl set image deployment/test-app test-app=$REGISTRY_IMAGE
-
-  when: manual
-  environment:
-    name: prod
-    url: http://prod/
