@@ -1,33 +1,33 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: shopping-cart-api
+  name: test-app
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        app: shopping-cart-api
+        app: test-app
     spec:
       containers:
-        - name: shopping-cart-api
-          image: registry.gitlab.com/tw-dev-bootcamp-august-2019-team-5/shopping-cart-api
+        - name: test-app
+          image: registry.gitlab.com/onkarpathak/spring-starter-gke
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
       imagePullSecrets:
-        - name: shopping-cart-api-registry
+        - name: test-app
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: shopping-cart-service
+  name: test-app-service
   labels:
-    app: shopping-cart-api
+    app: test-app
 spec:
   ports:
     - port: 80
       targetPort: 8080
   selector:
-    app: shopping-cart-api
+    app: test-app
   type: LoadBalancer

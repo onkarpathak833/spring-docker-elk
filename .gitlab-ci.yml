@@ -1,6 +1,8 @@
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   REGISTRY_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  CI_LOGIN: "onkarpathak833@gmail.com"
+  CI_PWD: "Onkar1712@"
 
 stages:
   - build
@@ -35,7 +37,7 @@ docker-build:
   stage: package
   script:
     - docker build -t registry.gitlab.com/onkarpathak/spring-starter-gke .
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker login -u $CI_LOGIN -p $CI_PWD
     - docker push registry.gitlab.com/onkarpathak/spring-starter-gke
 
 #pages:
@@ -62,11 +64,11 @@ k8s-deploy-qa:
     - gcloud container clusters get-credentials $CLUSTER_NAME
     - kubectl create namespace qa 2>/dev/null || echo "namespace qa already exist"
     - kubectl config set-context --current --namespace=qa
-    - kubectl delete secret shopping-cart-api-registry 2>/dev/null || echo "secret does not exist"
-    - kubectl create secret docker-registry shopping-cart-api-registry --docker-server=https://registry.gitlab.com --docker-username=$REGISTRY_TOKEN --docker-password=$REGISTRY_PASSWD
+    - kubectl delete secret test-app 2>/dev/null || echo "secret does not exist"
+    - kubectl create secret docker-registry test-app --docker-server=https://registry.gitlab.com --docker-username=$REGISTRY_TOKEN --docker-password=$REGISTRY_PASSWD
     - kubectl apply -f deployment.yml
     - kubectl apply -f deployment-db.yml
-    - kubectl set image deployment/shopping-cart-api shopping-cart-api=$REGISTRY_IMAGE
+    - kubectl set image deployment/test-app test-app=$REGISTRY_IMAGE
 
   environment:
     name: staging
@@ -83,11 +85,11 @@ k8s-deploy-prod:
     - gcloud container clusters get-credentials $CLUSTER_NAME
     - kubectl create namespace prod 2>/dev/null || echo "namespace prod already exist"
     - kubectl config set-context --current --namespace=prod
-    - kubectl delete secret shopping-cart-api-registry 2>/dev/null || echo "secret does not exist"
-    - kubectl create secret docker-registry shopping-cart-api-registry --docker-server=https://registry.gitlab.com --docker-username=$REGISTRY_TOKEN --docker-password=$REGISTRY_PASSWD
+    - kubectl delete secret test-app 2>/dev/null || echo "secret does not exist"
+    - kubectl create secret docker-registry test-app --docker-server=https://registry.gitlab.com --docker-username=$REGISTRY_TOKEN --docker-password=$REGISTRY_PASSWD
     - kubectl apply -f deployment.yml
     - kubectl apply -f deployment-db.yml
-    - kubectl set image deployment/shopping-cart-api shopping-cart-api=$REGISTRY_IMAGE
+    - kubectl set image deployment/test-app test-app=$REGISTRY_IMAGE
 
   when: manual
   environment:
