@@ -1,0 +1,87 @@
+version: '2.2'
+services:
+  myapp:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: myapp
+    ports:
+      - 8080:8080
+    networks:
+      - network1
+
+  elasticsearch:
+    build:
+      context: ./elk/elasticsearch
+      dockerfile: Dockerfile
+    container_name: elasticsearch
+    image: elasticsearch:latest
+    volumes:
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx1g"
+      - discovery.type=single-node
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_REPORTING_ENABLED=false
+      - XPACK_MONITORING_ENABLED=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - network1
+    depends_on:
+      - myapp
+
+
+  logstash:
+    build:
+      context: ./elk/logstash
+      dockerfile: Dockerfile
+    container_name: logstash
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    volumes:
+      - ./elk/logstash/config/logstash.conf:/usr/share/logstash/config/logstash.conf
+    networks:
+      - network1
+    ports:
+      - 9999:9999
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: ./elk/kibana
+      dockerfile: Dockerfile
+    container_name: kibana
+    environment:
+      SERVER_HOST: 0.0.0.0
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    volumes:
+      - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    networks:
+      - network1
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    build: elk/filebeats/
+    container_name: filebeats
+    volumes:
+      - ./elk/filebeats/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    networks:
+      - network1
+    ports:
+      - 5044:5044
+
+networks:
+  network1:
+    driver: bridge

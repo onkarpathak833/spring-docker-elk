@@ -25,6 +25,9 @@ dependencies {
     compile group: "org.springframework.boot", name: "spring-boot-starter", version: '2.1.1.RELEASE'
     compile group: "org.springframework.boot", name: "spring-boot-starter-web", version: '2.1.1.RELEASE'
     compile group: "org.springframework.boot", name: "spring-boot-starter-thymeleaf", version: '2.1.1.RELEASE'
+    // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+    compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '5.1'
+
 }
 
 
